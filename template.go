@@ -5,8 +5,13 @@ LABEL maintainer="edznux@gmail.com"
 
 ARG NAME={{.Name}}
 
+{{ if or (eq .BaseImage "alpine") (eq .BaseVersion "alpine") }}
+RUN apk update && apk upgrade -y
+RUN adduser -D ${NAME} && mkdir -p /home/${NAME}/workdir && chown -R ${NAME} /home/${NAME}
+{{ else }}
 RUN apt-get update && apt-get upgrade -y
 RUN useradd -s /bin/bash -m ${NAME} && mkdir /home/${NAME}/workdir && chown ${NAME}:${NAME} /home/${NAME}/workdir
+{{ end }}
 
 USER ${NAME}
 WORKDIR /home/${NAME}/workdir
